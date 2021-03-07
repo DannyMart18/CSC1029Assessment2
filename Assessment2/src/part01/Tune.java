@@ -10,11 +10,22 @@ public class Tune implements iTune{
     private int playCount;
     private Genre style;
 
-    public Tune(String title, String artist, int duration, Genre style){
+    public Tune(String title, String artist, int duration, Genre style) throws Exception{
         this.id = useNextID();
-        this.title = title;
-        this.artist = artist;
-        this.duration = duration;
+        if(title == null){
+            throw new Exception("Title must not be null");
+        }else{
+            this.title = title;
+        }if(artist == null){
+            throw new Exception("Artist must not be null");
+        }else{
+            this.artist = artist;
+        }
+        if(duration <= 0){
+            throw new Exception("Duration must be greater than zero");
+        }else{
+            this.duration = duration;
+        }
         this.style = style;
         this.playCount = 0;
 
@@ -67,11 +78,11 @@ public class Tune implements iTune{
 
     public String toString(){
         String res = "";
-        res += "ID: " + this.getId() + ", ";
-        res += "Title: " + this.getTitle() +", ";
-        res += "Artist: " + this.getArtist()+ ", ";
-        res += "Duration: " + this.getDuration() + " seconds, ";
-        res += "Genre: " + this.getStyle();
+        res += this.getId() + ", ";
+        res +=   this.getTitle() +", ";
+        res +=  this.getArtist()+ ", ";
+        res +=  this.getDuration() + " seconds, ";
+        res +=  this.getStyle();
         return res;
     }
 

@@ -25,33 +25,7 @@ public class Menu {
 		}
 		System.out.println();
 	}
-	public int getUserChoiceIndex() {
-		//validation to prevent the user from entering bad data
-		if ( items == null || items.length == 0 ) {
-			return 0;
-		}
-		int value = 0;
-		display();
-		boolean ok = false;
-		do {
-			System.out.print("Enter Selection: ");
-			try {
-				value = input.nextInt();
-				if ( value > 0 && value <= MP3.getTuneInfo().length) {
-					ok = true;
-				}
-				else {
-					System.out.println("That option isnt available!\nEnter a value between 1 and " + MP3.getTuneInfo().length);
-				}
-			}
-			catch(Exception ex) {
-				System.out.println("Error invalid input.");
-				input.nextLine();
-			}
-		} while (!ok);
 
-		return value;
-	}
 
 	public int getUserChoice() {
 		//validation to prevent the user from entering bad data
