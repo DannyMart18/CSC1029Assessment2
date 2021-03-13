@@ -83,10 +83,10 @@ public class Tune implements iTune{
     public String toString(){
         String res = "";
         res += this.getId() + ", ";
-        res +=   this.getTitle() +", ";
-        res +=  this.getArtist()+ ", ";
-        res +=  this.getDuration() + " seconds, ";
-        res +=  this.getStyle() +",";
+        res += this.getTitle() +", ";
+        res += this.getArtist()+ ", ";
+        res += this.getDuration() + ", ";
+        res += this.getStyle() +",";
         res += this.getPlayCount();
         return res;
     }

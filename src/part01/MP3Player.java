@@ -57,7 +57,7 @@ public class MP3Player implements iPlayer {
      * @return a String array with all the songs from the artist chosen
      */
     public String[] getTuneInfo(String artist){
-        ArrayList<Tune>data= new ArrayList<Tune>();
+        ArrayList<Tune>data = new ArrayList<Tune>();
         if(findArtist(artist) >= 0){
             data = findArtists(artist);
 
@@ -101,7 +101,7 @@ public class MP3Player implements iPlayer {
                 Tune t = new Tune(title, artist, duration, genre);
                 soundData.add(t);
             }catch(Exception ex){
-                System.out.println(ex.toString());
+               throw  new IllegalArgumentException(ex);
             }
 
             return true;

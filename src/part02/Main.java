@@ -1,23 +1,24 @@
-package part01;
+package part02;
+
+import part01.Genre;
 
 import java.util.Scanner;
 
 public class Main {
     //static scanner
     static Scanner input = new Scanner(System.in);
-    //instance of MP3Player
-    static MP3Player mp3 = new MP3Player();
+    //instance of Jukebox
+    static Jukebox mp3 = new Jukebox();
     //boolean value set to true when the system starts
     static boolean running = true;
 
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         //adds initial tune objects to the system
         addTunes();
-
         //Menu options array
         String[] menuOptions = { "Select From Full List", "Select Tune By Artist", "Select Tune By Genre",
-                "Add New Tune", "Display Top 10", "Switch Off", "Switch On", "Exit" };
+                "Add New Tune", "Display Top 10", "Insert Coin", "Management Options", "Switch Off", "Switch On", "Exit" };
 
         //instance of the menu class
         Menu appMenu = new Menu("QUB Music Management", menuOptions);
@@ -39,8 +40,10 @@ public class Main {
             case 3 -> selectTuneByGenre();
             case 4 -> addNewTune();
             case 5 -> displayTopTen();
-            case 6 -> switchOff();
-            case 7 -> switchOn();
+            case 6 -> insertCoin();
+            case 7 -> managementOptions();
+            case 8 -> switchOff();
+            case 9 -> switchOn();
             default -> System.out.println("Invalid Option: " + option + "\n");
         }
     }
@@ -61,6 +64,49 @@ public class Main {
         mp3.addTune("Baby", "Justin Bieber", 350, Genre.POP);
     }
 
+    private static void insertCoin(){
+        String[] coins = {"10p", "20p", "50p", "£1", "£2"};
+        int credit = 0;
+        System.out.println("You have " + mp3.getCredits() + "p available\n" + "The cost of a song is " + mp3.getCostPerCredit());
+
+        String title = ("Insert A Coin");
+        System.out.println(title);
+        for(int i=0; i < title.length(); i++){
+            System.out.print("+");
+        }
+        System.out.println();
+        int count = 1;
+        for(int i = 0; i< coins.length; i++){
+            System.out.println(count + ". " + coins[i]);
+            count++;
+        }
+
+        int choice = input.nextInt();
+            if (choice == 1) {
+                credit = 10;
+            } else if (choice == 2) {
+                credit = 20;
+            } else if (choice == 3) {
+                credit = 50;
+            } else if (choice == 4) {
+                credit = 100;
+            } else if (choice == 5) {
+                credit = 200;
+            } else {
+                System.out.println("Invalid coin inserted");
+            }
+
+        mp3.insertCoin(credit);
+    }
+    private static void managementOptions(){
+        System.out.println("Enter a cost per credit");
+        int cost = input.nextInt();
+        mp3.setCostPerCredit(cost);
+
+
+
+    }
+
     /*
     *Allows the user to view all songs available in the system and play a song. Checks if system is switched
     * on or off
@@ -68,6 +114,11 @@ public class Main {
     private static void selectFromFullList(){
         if(running) {
             if(mp3.getTuneInfo() != null) {
+                if(mp3.getCostPerCredit() == 0){
+                    System.out.println("All songs are free!!");
+                }else {
+                    System.out.println("Song plays cost " + mp3.getCostPerCredit() + "p per credit");
+                }
                 String[] songs = mp3.getTuneInfo();
                 int len = songs.length;
 
@@ -79,10 +130,13 @@ public class Main {
                     display[index] = tunes[1] + " By" + tunes[2];
                     index++;
                 }
+                System.out.println();
                 Menu songMenu = new Menu("Select a Song", display);
                 int choice = songMenu.getUserChoice();
-                System.out.println();
+
                 System.out.println(mp3.play(choice - 1));
+                System.out.println();
+                System.out.println("Balance: " + mp3.getCredits()+"p");
 
             }else{
                 System.out.println("MP3 Player has no songs");
@@ -98,6 +152,12 @@ public class Main {
     private static void selectTuneByArtist(){
         if(running){
             if(mp3.getTuneInfo() != null) {
+                if(mp3.getCostPerCredit() == 0){
+                    System.out.println("All songs are free!!");
+                }else {
+                    System.out.println("Song plays cost " + mp3.getCostPerCredit() + "p per credit");
+                }
+                System.out.println();
                 String[] songs = mp3.getTuneInfo();
                 int len = songs.length;
 
@@ -135,6 +195,7 @@ public class Main {
                 int song = retrieveTuneID(mp3.getTuneInfo(choice), songChoice);
                 System.out.println(mp3.play(song - 1));
                 System.out.println();
+                System.out.println("Balance: " + mp3.getCredits()+"p");
             }else{
                 System.out.println("MP3 Player has no songs");
             }
@@ -143,12 +204,19 @@ public class Main {
         }
     }
 
+
     /**
      *selects tunes by genre
      */
     private static void selectTuneByGenre() {
         if (running) {
             if(mp3.getTuneInfo() != null) {
+                if(mp3.getCostPerCredit() == 0){
+                    System.out.println("All songs are free!!");
+                }else {
+                    System.out.println("Song plays cost " + mp3.getCostPerCredit() + "p per credit");
+                }
+                System.out.println();
                 String[] songs = mp3.getTuneInfo();
                 int len = songs.length;
 
@@ -172,6 +240,7 @@ public class Main {
                 }
                 System.out.println(count + ". " + " Unknown");
                 System.out.println();
+                System.out.println("Balance: " + mp3.getCredits()+"p");
 
                 Genre genre;
                 //validation
@@ -212,6 +281,7 @@ public class Main {
 
                 System.out.println(mp3.play(song - 1));
                 System.out.println();
+                System.out.println("Balance: " + mp3.getCredits()+"p");
             }else {
                 System.out.println("MP3 Player has no songs");
             }
