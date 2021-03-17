@@ -86,7 +86,7 @@ public class Tune implements iTune{
         res += this.getTitle() +", ";
         res += this.getArtist()+ ", ";
         res += this.getDuration() + ", ";
-        res += this.getStyle() +",";
+        res += this.getStyle() +", ";
         res += this.getPlayCount();
         return res;
     }
