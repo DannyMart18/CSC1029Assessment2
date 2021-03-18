@@ -8,41 +8,40 @@ public class MP3Player implements iPlayer {
     public MP3Player(){
 
     }
-
-
     /**
      *
-     * @return
+     * @return songs array
      */
-    public String[] getTuneInfo(){
-        if(!soundData.isEmpty()){
-                String res[] = new String[soundData.size()];
-                for(int i =0; i < res.length; i++){
-                    res[i]= soundData.get(i).toString();
-                }
-
-                return res;
+    public String[] getTuneInfo() {
+        ArrayList<Tune> data = new ArrayList<Tune>();
+        if (!soundData.isEmpty()) {
+            data = soundData;
+            String[] songs = new String[soundData.size()];
+            int index = 0;
+            for (Tune tune : data) {
+                songs[index] = String.valueOf(tune);
+                index++;
             }
-        else{
+            return songs;
+
+        } else {
             return null;
         }
-
-        }
-
+    }
     /**
      *
-     * @param gen
-     * @return
+     * @param gen which the user chooses
+     * @return an array with all the songs from the chosen genre
      */
     public String[] getTuneInfo(Genre gen) {
-        ArrayList<Tune> sounds = new ArrayList<Tune>();
+        ArrayList<Tune> data = new ArrayList<Tune>();
         if (!soundData.isEmpty()) {
-            sounds = findGenre(gen);
+            data = findGenre(gen);
 
-            String songs[] = new String[sounds.size()];
+            String songs[] = new String[data.size()];
 
             int index = 0;
-            for (Tune tune : sounds) {
+            for (Tune tune : data) {
                 songs[index] = String.valueOf(tune);
                 index++;
             }
@@ -52,21 +51,20 @@ public class MP3Player implements iPlayer {
         }
     }
 
-
     /**
      *
-     * @param artist
-     * @return
+     * @param artist which the user chooses
+     * @return a String array with all the songs from the artist chosen
      */
     public String[] getTuneInfo(String artist){
-        ArrayList<Tune>sounds = new ArrayList<Tune>();
+        ArrayList<Tune>data = new ArrayList<Tune>();
         if(findArtist(artist) >= 0){
-            sounds = findArtists(artist);
+            data = findArtists(artist);
 
-            String songs[] = new String[sounds.size()];
+            String songs[] = new String[data.size()];
 
             int index =0;
-            for(Tune tune: sounds){
+            for(Tune tune: data){
                 songs[index]= String.valueOf(tune);
                 index ++;
             }
@@ -80,17 +78,21 @@ public class MP3Player implements iPlayer {
     /**
      *
      * @param tuneID
-     * @return
+     * @return A string to say the song is playing
      */
     public String play(int tuneID){
-
         String play = "";
-        play += soundData.get(tuneID).play();
-        return play;
+        if (tuneID < 0) {
+            play += "Invalid Tune ID";
+            return play;
+        }else {
+            play += soundData.get(tuneID).play();
+            return play;
+        }
     }
 
     /**
-     *
+     *adds a new tune to soundData
      * @param title
      * @param artist
      * @param duration
@@ -98,23 +100,26 @@ public class MP3Player implements iPlayer {
      * @return
      */
     public boolean addTune(String title, String artist, int duration, Genre genre){
-        if(title!= null && artist != null && duration > 0 && genre != null){
-            try {
-                Tune t = new Tune(title, artist, duration, genre);
-                soundData.add(t);
-            }catch(Exception ex){
-                System.out.println(ex.toString());
+                if(title!= null && artist != null && duration > 0 && genre != null){
+                    if(findDuplicates(title) >= 0 ){
+                        return false;
+                    }else {
+                        try {
+                            Tune t = new Tune(title, artist, duration, genre);
+                            soundData.add(t);
+                        } catch (Exception ex) {
+                            throw new IllegalArgumentException(ex);
+                        }
+
+                        return true;
+                    }
             }
-
-            return true;
+            return false;
         }
-
-        return false;
-    }
 
     /**
      *
-     * @return
+     * @return true
      */
     public boolean switchOff(){
         return true;
@@ -122,15 +127,26 @@ public class MP3Player implements iPlayer {
 
     /**
      *
-     * @return
+     * @return true
      */
     public boolean switchOn(){
         return true;
     }
 
+    private int findDuplicates(String title){
+        for (int i = 0; i< soundData.size(); i++){
+            Tune tune = this.soundData.get(i);
+            if(tune.getTitle().equalsIgnoreCase(title)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+
 
     /**
-     *
+     *Finds the genre in soundData
      * @param gen
      * @return
      */
@@ -145,6 +161,12 @@ public class MP3Player implements iPlayer {
         return genre;
 
     }
+
+    /**
+     *
+     * @param gen
+     * @return
+     */
     private int Genre(Genre gen){
         for (int i = 0; i< soundData.size(); i++){
             Tune tune = this.soundData.get(i);
@@ -156,8 +178,9 @@ public class MP3Player implements iPlayer {
     }
 
 
+
     /**
-     *
+     *Finds the artist in soundData
      * @param artist
      * @return
      */
@@ -187,6 +210,7 @@ public class MP3Player implements iPlayer {
         }
         return -1;
     }
+
 
 
 

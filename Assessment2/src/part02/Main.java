@@ -1,23 +1,27 @@
-package part01;
+package part02;
+
+import part01.Genre;
 
 import java.util.Scanner;
 
 public class Main {
     //static scanner
     static Scanner input = new Scanner(System.in);
-    //instance of MP3Player
-    static MP3Player mp3 = new MP3Player();
+    //instance of Jukebox
+     static Jukebox mp3 = new Jukebox();
     //boolean value set to true when the system starts
-    static boolean running = true;
+    static boolean running = false;
 
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         //adds initial tune objects to the system
-        addTunes();
+        //initially used to add tunes for part01
+        //addTunes();
+        System.out.println("The system is currently switched off -  switch on by pressing 9");
 
         //Menu options array
         String[] menuOptions = { "Select From Full List", "Select Tune By Artist", "Select Tune By Genre",
-                "Add New Tune", "Display Top 10", "Switch Off", "Switch On", "Exit" };
+                "Add New Tune", "Display Top 10", "Insert Coin", "Management Options", "Switch Off", "Switch On", "Exit" };
 
         //instance of the menu class
         Menu appMenu = new Menu("QUB Music Management", menuOptions);
@@ -39,8 +43,10 @@ public class Main {
             case 3 -> selectTuneByGenre();
             case 4 -> addNewTune();
             case 5 -> displayTopTen();
-            case 6 -> switchOff();
-            case 7 -> switchOn();
+            case 6 -> insertCoin();
+            case 7 -> managementOptions();
+            case 8 -> switchOff();
+            case 9 -> switchOn();
             default -> System.out.println("Invalid Option: " + option + "\n");
         }
     }
@@ -58,7 +64,61 @@ public class Main {
         mp3.addTune("Caroline", "Status Quo", 350, Genre.ROCK);
         mp3.addTune("Symphony", "Mozart", 350, Genre.CLASSICAL);
         mp3.addTune("How To Save A Life", "The Fray", 350, Genre.POP);
+        mp3.addTune("Down Down", "Status Quo", 350, Genre.ROCK);
         mp3.addTune("Baby", "Justin Bieber", 350, Genre.POP);
+    }
+
+    /**
+     * inserts a coin into the jukebox and updates available credits
+     */
+    private static void insertCoin(){
+        if(running) {
+            String[] coins = {"10p", "20p", "50p", "£1", "£2"};
+            int credit = 0;
+            System.out.println("Cost Per Credit: " + mp3.getCostPerCredit() + "p\nYou have " + mp3.getCredits() + " credits available");
+            System.out.println();
+
+            Menu coinMenu = new Menu("Insert A Coin", coins);
+            int choice = coinMenu.getUserChoice();
+
+            if (choice == 1) {
+                credit = 10;
+            } else if (choice == 2) {
+                credit = 20;
+            } else if (choice == 3) {
+                credit = 50;
+            } else if (choice == 4) {
+                credit = 100;
+            } else if (choice == 5) {
+                credit = 200;
+            } else {
+                System.out.println("Invalid coin inserted");
+            }
+
+            mp3.insertCoin(credit);
+            System.out.println("Number of Credits: " + mp3.getCredits());
+        }else {
+            System.out.println("System is switched off");
+        }
+    }
+
+    /**
+     * allows the user to change the cost per credit
+     */
+    private static void managementOptions(){
+        if(running) {
+            try {
+                System.out.println("Enter a cost per credit in pence");
+                System.out.print("Cost per credit-- ");
+                int cost = input.nextInt();
+                mp3.setCostPerCredit(cost);
+            }catch (Exception ex){
+                System.out.println("Invalid Data Entered");
+            }
+        }else {
+            System.out.println("System is switched off");
+        }
+
     }
 
     /*
@@ -68,6 +128,11 @@ public class Main {
     private static void selectFromFullList(){
         if(running) {
             if(mp3.getTuneInfo() != null) {
+                if(mp3.getCostPerCredit() == 0){
+                    System.out.println("All songs are free!!");
+                }else {
+                    System.out.println("You have " + mp3.getCredits() + " credits available");
+                }
                 String[] songs = mp3.getTuneInfo();
                 int len = songs.length;
 
@@ -77,7 +142,7 @@ public class Main {
                 for (String song : songs) {
                     String artist = song.toString();
                     String[] tunes = artist.split(",");
-                    display[index] = tunes[1] + " By" + tunes[2] + ", " +tunes[0];
+                    display[index] = tunes[1] + " By" + tunes[2] + " ID, " +tunes[0];
                     index++;
                 }
                 bubbleSortAsc(display);
@@ -88,19 +153,28 @@ public class Main {
 
                 System.out.println(mp3.play(tuneId - 1));
                 System.out.println();
+                System.out.println("Credits Remaining: " + mp3.getCredits());
+
             }else{
                 System.out.println("MP3 Player has no songs");
             }
 
         }else{
             System.out.println("System is switched off");
-        }
+    }
     }
     /*
     * Allows the user to select a song by viewing the artist first
     * */
     private static void selectTuneByArtist(){
-            if (running) {
+        if(running){
+            if(mp3.getTuneInfo() != null) {
+                if(mp3.getCostPerCredit() == 0){
+                    System.out.println("All songs are free!!");
+                }else {
+                    System.out.println("You have " + mp3.getCredits() + " credits available");
+                }
+                System.out.println();
                 String songs[] = mp3.getTuneInfo();
                 int len = songs.length;
 
@@ -147,13 +221,17 @@ public class Main {
 
                     System.out.println(mp3.play(tuneId - 1));
                     System.out.println();
+                    System.out.println("Credits Remaining " + mp3.getCredits());
                 } catch (NullPointerException ex) {
                     System.out.println("Invalid choice");
                 }
-            } else {
-                System.out.println("MP3 player is switched off");
+            }else{
+                System.out.println("MP3 Player has no songs");
             }
+        }else{
+            System.out.println("System is switched off");
         }
+    }
 
 
     /**
@@ -162,6 +240,12 @@ public class Main {
     private static void selectTuneByGenre() {
         if (running) {
             if(mp3.getTuneInfo() != null) {
+                if(mp3.getCostPerCredit() == 0){
+                    System.out.println("All songs are free!!");
+                }else {
+                    System.out.println("You have " + mp3.getCredits() + " credits available");
+                }
+                System.out.println();
                 String[] songs = mp3.getTuneInfo();
                 int len = songs.length;
 
@@ -215,6 +299,7 @@ public class Main {
                 } else {
                     genre = Genre.OTHER;
                 }
+
                 //format the data to display properly
                 String[] temp = mp3.getTuneInfo(genre);
                 String[] display = new String[temp.length];
@@ -228,12 +313,13 @@ public class Main {
                 bubbleSortAsc(display);
                 System.out.println();
 
-                part02.Menu genreMenu = new part02.Menu("Songs Sorted By Genre", display);
+                Menu genreMenu = new Menu("Songs Sorted By Genre", display);
                 int choice = genreMenu.getUserChoice();
                 int tuneId = retrieveTuneID(display, choice);
 
                 System.out.println(mp3.play(tuneId - 1));
                 System.out.println();
+                System.out.println("Credits Remaining: " + mp3.getCredits());
             }else {
                 System.out.println("MP3 Player has no songs");
             }
@@ -282,7 +368,7 @@ public class Main {
         }else {
             System.out.println("System is switched off");
         }
-     }
+    }
 
     /**
      * retrieves the tune ID and allows a tune to be played by index as opposed to ID
@@ -305,7 +391,7 @@ public class Main {
             String artist = "";
             int duration = 0;
             boolean ok = false;
-            Genre genre;
+            Genre genre = null;
             while(title.length() < 1){
             System.out.println("Enter the song title");
             title = tune.nextLine();
@@ -320,28 +406,33 @@ public class Main {
                     duration = input.nextInt();
                     if (duration > 0) {
                         ok = true;
-                    } else {
-                        System.out.println("Invalid choice");
                     }
                 } catch (Exception ex) {
                     System.out.println("Error invalid input.");
                     input.nextLine();
                 }
             }while (duration <= 0);
-            System.out.println("Enter the Genre:\n1. Rock\n2. Pop\n3. Dance\n4. Jazz\n5. Classical\n6. Other");
-            int num = tune.nextInt();
-            if (num == 1) {
-                    genre = Genre.ROCK;
-                } else if (num == 2) {
-                    genre = Genre.POP;
-                } else if (num == 3) {
-                    genre = Genre.DANCE;
-                } else if (num == 4) {
-                    genre = Genre.JAZZ;
-                } else if (num == 5) {
-                    genre = Genre.CLASSICAL;
-                } else {
-                    genre = Genre.OTHER;
+                System.out.println("Enter the Genre:\n1. Rock\n2. Pop\n3. Dance\n4. Jazz\n5. Classical\n6. Other");
+                try {
+                    int num = tune.nextInt();
+                    if (num == 1) {
+                        genre = Genre.ROCK;
+                    } else if (num == 2) {
+                        genre = Genre.POP;
+                    } else if (num == 3) {
+                        genre = Genre.DANCE;
+                    } else if (num == 4) {
+                        genre = Genre.JAZZ;
+                    } else if (num == 5) {
+                        genre = Genre.CLASSICAL;
+                    } else {
+                        genre = Genre.OTHER;
+
+                    }
+
+                } catch (Exception e) {
+                    System.out.println("Invalid Choice");
+                    System.out.println();
                 }
 
                     if (mp3.addTune(title, artist, duration, genre)) {
@@ -358,7 +449,8 @@ public class Main {
     }
     //switches the system off
     private static void switchOff(){
-        if(mp3.switchOn()){
+        if(running){
+            mp3.switchOff();
             System.out.println("System has been shut down");
             running = false;
         }else{
@@ -367,7 +459,9 @@ public class Main {
     }
     //switches the system on
     private static void switchOn(){
-        if(mp3.switchOff()){
+        if(!running){
+            mp3.switchOn();
+            System.out.println("Songs added");
             System.out.println("The system has been switched on");
             running = true;
         }else{
@@ -385,7 +479,7 @@ public class Main {
         if (n==0 || n==1){
             return n;
         }
-        int j = 0;//for next element
+        int j = 0;
         for (int i=0; i < n-1; i++){
             if (!data[i].equalsIgnoreCase(data[i+1])){
                 data[j++] = data[i];
@@ -393,8 +487,7 @@ public class Main {
         }
         data[j++] = data[n-1];
         return j;
-        }
-
+    }
 
 
     /**
@@ -436,4 +529,6 @@ public class Main {
             }
         }
     }
+
+
 }
