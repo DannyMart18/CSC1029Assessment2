@@ -71,19 +71,23 @@ public class Main {
                 String[] songs = mp3.getTuneInfo();
                 int len = songs.length;
 
+                //format the data to display properly
                 String[] display = new String[len];
                 int index = 0;
                 for (String song : songs) {
                     String artist = song.toString();
                     String[] tunes = artist.split(",");
-                    display[index] = tunes[1] + " By" + tunes[2];
+                    display[index] = tunes[1] + " By" + tunes[2] + ", " +tunes[0];
                     index++;
                 }
+                bubbleSortAsc(display);
+                System.out.println();
                 Menu songMenu = new Menu("Select a Song", display);
                 int choice = songMenu.getUserChoice();
-                System.out.println();
-                System.out.println(mp3.play(choice - 1));
+                int tuneId = retrieveTuneID(display, choice);
 
+                System.out.println(mp3.play(tuneId - 1));
+                System.out.println();
             }else{
                 System.out.println("MP3 Player has no songs");
             }
@@ -96,15 +100,14 @@ public class Main {
     * Allows the user to select a song by viewing the artist first
     * */
     private static void selectTuneByArtist(){
-        if(running){
-            if(mp3.getTuneInfo() != null) {
-                String[] songs = mp3.getTuneInfo();
+            if (running) {
+                String songs[] = mp3.getTuneInfo();
                 int len = songs.length;
 
-                //Splits the getTuneInfo and isolates the artists and prints them
                 String[] artists = new String[len];
                 int index = 0;
-                for (int i = 0; i < len; i++) {
+
+                for (int i = 0; i < artists.length; i++) {
                     String artist = songs[i].toString();
                     String[] tunes = artist.split(",");
                     artists[index] = tunes[2];
@@ -113,35 +116,45 @@ public class Main {
 
                 //sorts the artists in ascending order a-z
                 bubbleSortAsc(artists);
-                /**
-                 * Remove duplicates partially works, it removes the first set of duplicates, however any duplicates that follow will not be removed
-                 */
                 len = removeDuplicateElements(artists, len);
-
-                int count = 1;
-                for (int i = 0; i < artists.length; i++) {
-                    System.out.println(count++ + ". " + artists[i]);
+                for (int i = 0; i < len; i++) {
+                    // print artists array for every index less than length of len
+                    System.out.println((i + 1) + "." + artists[i]);
                 }
                 System.out.println();
+                try {
+                    System.out.println("Enter The Artist You Would Like To View");
+                    Scanner artistChoice = new Scanner(System.in);
+                    String choice = artistChoice.nextLine();
 
-                System.out.println("Enter The Artist You Would Like To View");
-                Scanner artistChoice = new Scanner(System.in);
-                String choice = artistChoice.nextLine();
+                    //format the data to display properly
+                    String[] temp = mp3.getTuneInfo(choice);
+                    String[] display = new String[temp.length];
+                    index = 0;
+                    for (String song : temp) {
+                        String artist = song.toString();
+                        String[] tunes = artist.split(",");
+                        display[index] = tunes[1] + " By" + tunes[2] + " - ID" + ", " +tunes[0];
+                        index++;
+                    }
+                    bubbleSortAsc(display);
+                    System.out.println();
 
 
-                Menu artistMenu = new Menu("Songs Sorted By Artist", mp3.getTuneInfo(choice));
-                int songChoice = artistMenu.getUserChoice();
+                    Menu artistMenu = new Menu("Songs Sorted By Artist", display);
+                    int songChoice = artistMenu.getUserChoice();
+                    int tuneId = retrieveTuneID(display, songChoice);
 
-                int song = retrieveTuneID(mp3.getTuneInfo(choice), songChoice);
-                System.out.println(mp3.play(song - 1));
-                System.out.println();
-            }else{
-                System.out.println("MP3 Player has no songs");
+                    System.out.println(mp3.play(tuneId - 1));
+                    System.out.println();
+                } catch (NullPointerException ex) {
+                    System.out.println("Invalid choice");
+                }
+            } else {
+                System.out.println("MP3 player is switched off");
             }
-        }else{
-            System.out.println("System is switched off");
         }
-    }
+
 
     /**
      *selects tunes by genre
@@ -170,9 +183,7 @@ public class Main {
                     System.out.println(count + ". " + genres[i]);
                     count++;
                 }
-                System.out.println(count + ". " + " Unknown");
                 System.out.println();
-
                 Genre genre;
                 //validation
                 int num = 0;
@@ -204,13 +215,24 @@ public class Main {
                 } else {
                     genre = Genre.OTHER;
                 }
-                Menu genreMenu = new Menu("Songs Sorted By Genre", mp3.getTuneInfo(genre));
-                int songChoice = genreMenu.getUserChoice();
+                //format the data to display properly
+                String[] temp = mp3.getTuneInfo(genre);
+                String[] display = new String[temp.length];
+                index = 0;
+                for (String song : temp) {
+                    String artist = song.toString();
+                    String[] tunes = artist.split(",");
+                    display[index] = tunes[1] + " By" + tunes[2] + " ID, " +tunes[0];
+                    index++;
+                }
+                bubbleSortAsc(display);
+                System.out.println();
 
-                int song = retrieveTuneID(mp3.getTuneInfo(genre), songChoice);
+                part02.Menu genreMenu = new part02.Menu("Songs Sorted By Genre", display);
+                int choice = genreMenu.getUserChoice();
+                int tuneId = retrieveTuneID(display, choice);
 
-
-                System.out.println(mp3.play(song - 1));
+                System.out.println(mp3.play(tuneId - 1));
                 System.out.println();
             }else {
                 System.out.println("MP3 Player has no songs");
@@ -226,28 +248,32 @@ public class Main {
      */
     private static void displayTopTen(){
         if(running){
-            if(mp3.getTuneInfo() != null) {
-                String[] songs = mp3.getTuneInfo();
-                String[] songPlays = new String[songs.length];
+            if(mp3.getTuneInfo() != null )  {
+                if(mp3.getTuneInfo().length >= 10) {
+                    String[] songs = mp3.getTuneInfo();
+                    String[] songPlays = new String[songs.length];
 
-                for (int i = 0; i < songs.length; i++) {
-                    String[] tunes = songs[i].split(",");
+                    for (int i = 0; i < songs.length; i++) {
+                        String[] tunes = songs[i].split(",");
 
-                    songPlays[i] = tunes[5] + " Plays - " + tunes[1] + " By" + tunes[2];
-                }
-                //sorts song plays in descending order
-                bubbleSortDesc(songPlays);
+                        songPlays[i] = tunes[5] + " Plays - " + tunes[1] + " By" + tunes[2];
+                    }
+                    //sorts song plays in descending order
+                    bubbleSortDesc(songPlays);
 
-                String title = "Top Ten Songs";
-                System.out.println(title);
-                for (int i = 0; i < title.length(); i++) {
-                    System.out.print("+");
-                }
-                System.out.println();
+                    String title = "Top Ten Songs";
+                    System.out.println(title);
+                    for (int i = 0; i < title.length(); i++) {
+                        System.out.print("+");
+                    }
+                    System.out.println();
 
 
-                for (int i = 0; i < 10; i++) {
-                    System.out.println(songPlays[i]);
+                    for (int i = 0; i < 10; i++) {
+                        System.out.println(songPlays[i]);
+                    }
+                }else{
+                    System.out.println("Not enough songs to display top 10");
                 }
             }else{
                 System.out.println("MP3 Player is empty");
@@ -266,7 +292,7 @@ public class Main {
      */
      private static int retrieveTuneID(String[] data, int choice){
         String[] ID = data[choice-1].split(", ");
-        String tuneID = ID[0];
+        String tuneID = ID[1];
         int tuneId = Integer.parseInt(tuneID);
         return tuneId;
      }
@@ -278,6 +304,7 @@ public class Main {
             String title = "";
             String artist = "";
             int duration = 0;
+            boolean ok = false;
             Genre genre;
             while(title.length() < 1){
             System.out.println("Enter the song title");
@@ -287,10 +314,20 @@ public class Main {
                 System.out.println("Enter the artist");
                 artist = tune.nextLine();
             }
-            while (duration <= 0){
-            System.out.println("Enter the duration");
-            duration = tune.nextInt();
-            }
+            do {
+                System.out.println("Enter the duration");
+                try {
+                    duration = input.nextInt();
+                    if (duration > 0) {
+                        ok = true;
+                    } else {
+                        System.out.println("Invalid choice");
+                    }
+                } catch (Exception ex) {
+                    System.out.println("Error invalid input.");
+                    input.nextLine();
+                }
+            }while (duration <= 0);
             System.out.println("Enter the Genre:\n1. Rock\n2. Pop\n3. Dance\n4. Jazz\n5. Classical\n6. Other");
             int num = tune.nextInt();
             if (num == 1) {
@@ -348,22 +385,17 @@ public class Main {
         if (n==0 || n==1){
             return n;
         }
-
-        String[] temp = new String[n];
-        int j = 0;
-        for (int i=0; i<n-1; i++){
+        int j = 0;//for next element
+        for (int i=0; i < n-1; i++){
             if (!data[i].equalsIgnoreCase(data[i+1])){
-                temp[j] = data[i];
-                j++;
+                data[j++] = data[i];
             }
         }
-
-        // Changing original array
-        for (int i=0; i<j; i++){
-            data[i] = temp[i];
-        }
+        data[j++] = data[n-1];
         return j;
-    }
+        }
+
+
 
     /**
      *

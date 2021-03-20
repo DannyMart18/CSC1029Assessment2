@@ -81,10 +81,14 @@ public class MP3Player implements iPlayer {
      * @return A string to say the song is playing
      */
     public String play(int tuneID){
-
         String play = "";
-        play += soundData.get(tuneID).play();
-        return play;
+        if (tuneID < 0) {
+            play += "Invalid Tune ID";
+            return play;
+        }else {
+            play += soundData.get(tuneID).play();
+            return play;
+        }
     }
 
     /**
@@ -96,20 +100,19 @@ public class MP3Player implements iPlayer {
      * @return
      */
     public boolean addTune(String title, String artist, int duration, Genre genre){
-        if(title!= null && artist != null && duration > 0 && genre != null){
-            try {
-                Tune t = new Tune(title, artist, duration, genre);
-                soundData.add(t);
-            }catch(Exception ex){
-               throw  new IllegalArgumentException(ex);
+                if(title!= null && artist != null && duration > 0 && genre != null){
+
+                    try {
+                        Tune t = new Tune(title, artist, duration, genre);
+                        soundData.add(t);
+                    }catch(Exception ex){
+                        throw  new IllegalArgumentException(ex);
+                    }
+
+                    return true;
             }
-
-            return true;
+            return false;
         }
-
-        return false;
-    }
-
     /**
      *
      * @return true
@@ -191,6 +194,7 @@ public class MP3Player implements iPlayer {
         }
         return -1;
     }
+
 
 
 
