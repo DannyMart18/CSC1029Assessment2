@@ -58,6 +58,7 @@ public class Main {
         mp3.addTune("Caroline", "Status Quo", 350, Genre.ROCK);
         mp3.addTune("Symphony", "Mozart", 350, Genre.CLASSICAL);
         mp3.addTune("How To Save A Life", "The Fray", 350, Genre.POP);
+        mp3.addTune("Down Down", "Status Quo", 350, Genre.ROCK);
         mp3.addTune("Baby", "Justin Bieber", 350, Genre.POP);
     }
 
@@ -73,16 +74,19 @@ public class Main {
 
                 //format the data to display properly
                 String[] display = new String[len];
+                String[] refinedDisplay = new String[len];
                 int index = 0;
                 for (String song : songs) {
                     String artist = song.toString();
                     String[] tunes = artist.split(",");
                     display[index] = tunes[1] + " By" + tunes[2] + ", " +tunes[0];
+                    refinedDisplay[index] = tunes[1] + " By" + tunes[2];
                     index++;
                 }
                 bubbleSortAsc(display);
+                bubbleSortAsc(refinedDisplay);
                 System.out.println();
-                Menu songMenu = new Menu("Select a Song", display);
+                Menu songMenu = new Menu("Select a Song", refinedDisplay);
                 int choice = songMenu.getUserChoice();
                 int tuneId = retrieveTuneID(display, choice);
 
@@ -358,7 +362,7 @@ public class Main {
     }
     //switches the system off
     private static void switchOff(){
-        if(mp3.switchOn()){
+        if(running){
             System.out.println("System has been shut down");
             running = false;
         }else{
@@ -367,7 +371,7 @@ public class Main {
     }
     //switches the system on
     private static void switchOn(){
-        if(mp3.switchOff()){
+        if(!running){
             System.out.println("The system has been switched on");
             running = true;
         }else{

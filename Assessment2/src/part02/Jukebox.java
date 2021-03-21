@@ -12,11 +12,7 @@ public class Jukebox extends MP3Player {
     private int credits;
     private int costPerCredit;
 
-
-
-
     public Jukebox() {
-        super();
         this.credits = 0;
         this.costPerCredit = 0;
     }

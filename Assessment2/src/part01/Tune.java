@@ -12,11 +12,11 @@ public class Tune implements iTune{
 
     public Tune(String title, String artist, int duration, Genre style) throws Exception{
         this.id = useNextID();
-        if(title == null){
+        if(title == null || title.trim().equals("") ){
             throw new Exception("Title must not be null");
         }else{
             this.title = title;
-        }if(artist == null){
+        }if(artist == null || artist.trim().equals("")){
             throw new Exception("Artist must not be null");
         }else{
             this.artist = artist;
@@ -25,8 +25,11 @@ public class Tune implements iTune{
             throw new Exception("Duration must be greater than zero");
         }else{
             this.duration = duration;
+        }if(style == null){
+            throw new Exception("Style must not be null");
+        }else {
+            this.style = style;
         }
-        this.style = style;
         this.playCount = 0;
 
     }

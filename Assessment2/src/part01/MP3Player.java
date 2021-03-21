@@ -82,7 +82,7 @@ public class MP3Player implements iPlayer {
      */
     public String play(int tuneID){
         String play = "";
-        if (tuneID < 0) {
+        if (tuneID < 0 || tuneID > soundData.size()) {
             play += "Invalid Tune ID";
             return play;
         }else {
@@ -101,6 +101,7 @@ public class MP3Player implements iPlayer {
      */
     public boolean addTune(String title, String artist, int duration, Genre genre){
                 if(title!= null && artist != null && duration > 0 && genre != null){
+                    //prevents duplicates from being added
                     if(findDuplicates(title) >= 0 ){
                         return false;
                     }else {
